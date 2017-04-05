@@ -15,6 +15,7 @@
     {
       "name": "flights-airport",
       "path": "data/flights-airport.csv",
+      "format": "csv",
       "schema": {
         "fields": [
           {
@@ -35,6 +36,7 @@
     {
       "name": "airports",
       "path": "data/airports.csv",
+      "format": "csv",
       "schema": {
         "fields": [
           {
@@ -78,7 +80,6 @@
         "width": 900,
         "height": 560,
         "padding": {"top": 25, "left": 0, "right": 0, "bottom": 0},
-
         "data": [
           {
             "name": "states",
