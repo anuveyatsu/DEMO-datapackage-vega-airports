@@ -1,5 +1,5 @@
 {
-  "name": "us-airports-connections",
+  "name": "vega-airports",
   "title": "Connections of the US airports",
   "sources": [{
     "name": "vega-datasets",
