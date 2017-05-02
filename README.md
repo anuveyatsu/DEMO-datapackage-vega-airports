@@ -68,3 +68,4 @@ Outside of `spec` attribute there are some other important parameters to note:
 [vega]: https://vega.github.io/vega/
 [airports]: https://mbostock.github.io/d3/talk/20111116/airports.html
 [editor]: https://vega.github.io/vega-editor/?mode=vega&spec=airports
+[datapackage.json]: http://specs.frictionlessdata.io/data-package/#specification
