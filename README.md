@@ -1,4 +1,4 @@
-This is an example Data Package, that demonstrates how to build the awesome visualizations using the "[Vega][vega] Graph Spec". We are using [Flight connections of the airports in the US][airports] - one of the examples from [vega editor][editor] - and displaying it here, on DataHub with slightest modifications in vega-spec.
+This is an example Data Package, that demonstrates how to build the awesome visualizations using the "Vega Graph Spec". We are using [Flight connections of the airports in the US][airports] - one of the examples from [vega editor][editor] - and displaying it here, on DataHub with slightest modifications in vega-spec.
 
 ## Views
 
