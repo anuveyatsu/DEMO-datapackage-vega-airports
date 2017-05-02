@@ -1,13 +1,35 @@
-Flight connections of the airports in the US. This is an example DataPackage that demonstrates usage of "Vega Graph Specifications". This DataPackage is based on [U.S. Airports, 2008](https://mbostock.github.io/d3/talk/20111116/airports.html) by Mike Bostock.
+This is an example Data Package, that demonstrates how to build the awesome visualizations using the "[Vega][vega] Graph Spec". We are using [Flight connections of the airports in the US][airports] - one of the examples from [vega editor][editor] - and displaying it here, on DataHub with slightest modifications in vega-spec.
 
 ## Views
 
-To create graphs for your tabular DataPackage, the datapackage.json should include the views attribute that defines data views.
+We assume that you are familiar with what [datapackage.json][datapackage.json] is and it's specifications.
+
+To create graphs for your tabular Data Package, the `datapackage.json` should include the `views` attribute that is responsible for visualizations.
+
+If you are familiar with [Vega][vega] specifications, you would probably like to use all it's futures and display you data with desired visualizations in a Vega way. To use it, inside `views` you should set `specType` to "vega" and define some graph specifications in `spec`. See example datapackage.json:
 
 ### Vega Graph Specifications
 
-<script src="https://gist.github.com/anuveyatsu/f8860dc4bd3aa2f5697bd35a202aadfa.js"></script>
-To use "Vega Graph Specification" `specType` inside `views` attribute should be set to `vega` - line 79. You can use almost the same specifications inside `spec` attribute, that are used for setting the vega graphs. Only difference is that in `data` property, all `url` and `path` attributes are moved out. Instead of that, `name` attribute is used to reference a dataset - lines 86, 89 and 110. Note, in lines 85-87 we created a new object inside `data` property - `{"name": "flights-airport"}` to reference it from other Vega data items (see lines 100 and 136).
+{{ datapackage.json }}
+
+<br>
+
+You can use almost the same specifications inside `spec` attribute, that are used for setting the vega graphs. Only difference is that in `data` property, `url` and `path` attributes are moved out.
+
+```
+  ...
+  "spec": {
+    ...
+    "data": [
+      {
+        "name": "flights-airport"
+      }
+      ...
+    ]
+  }
+```
+
+Instead we use `name` attribute to reference to a dataset. Note, how we created a new object inside `data` property - `{"name": "flights-airport"}` to reference it to resources (this names are identical to names of resources)
 
 Outside of `spec` attribute there are some other important parameters to note:
 
@@ -42,3 +64,7 @@ Outside of `spec` attribute there are some other important parameters to note:
     </tr>
   </tbody>
 </table>
+
+[vega]: https://vega.github.io/vega/
+[airports]: https://mbostock.github.io/d3/talk/20111116/airports.html
+[editor]: https://vega.github.io/vega-editor/?mode=vega&spec=airports

@@ -1,6 +1,6 @@
 {
-  "name": "vega-airports",
-  "title": "Connections of the US airports",
+  "name": "vega-views-tutorial-topojson",
+  "title": "Vega Graph Spec Tutorial - US Airports",
   "sources": [{
     "name": "vega-datasets",
     "web": "https://github.com/vega/vega-datasets"
