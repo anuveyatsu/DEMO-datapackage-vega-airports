@@ -1,10 +1,13 @@
 {
   "name": "vega-views-tutorial-topojson",
   "title": "Vega Graph Spec Tutorial - US Airports",
-  "sources": [{
-    "name": "vega-datasets",
-    "web": "https://github.com/vega/vega-datasets"
-  }],
+  "sources": [
+    {
+      "name": "vega-datasets",
+      "web": "https://github.com/vega/vega-datasets",
+      "title": "vega-datasets"
+    }
+  ],
   "resources": [
     {
       "name": "states",
@@ -75,163 +78,298 @@
     {
       "name": "airports-map-interactive",
       "title": "Airports connections in the US",
-      "resources": ["states", 1, 2],
+      "resources": [
+        "states",
+        1,
+        2
+      ],
       "specType": "vega",
       "spec": {
         "width": 900,
         "height": 560,
-        "padding": {"top": 25, "left": 0, "right": 0, "bottom": 0},
+        "padding": {
+          "top": 25,
+          "left": 0,
+          "right": 0,
+          "bottom": 0
+        },
         "data": [
           {
             "name": "flights-airport"
           },
           {
             "name": "states",
-            "format": {"type": "topojson", "feature": "states"},
+            "format": {
+              "type": "topojson",
+              "feature": "states"
+            },
             "transform": [
               {
-                "type": "geopath", "projection": "albersUsa",
-                "scale": 1200, "translate": [450, 280]
+                "type": "geopath",
+                "projection": "albersUsa",
+                "scale": 1200,
+                "translate": [
+                  450,
+                  280
+                ]
               }
             ]
           },
           {
             "name": "traffic",
             "source": "flights-airport",
-            "format": {"parse": "auto"},
+            "format": {
+              "parse": "auto"
+            },
             "transform": [
               {
-                "type": "aggregate", "groupby": ["origin"],
-                "summarize": [{"field": "count", "ops": ["sum"], "as": ["flights"]}]
+                "type": "aggregate",
+                "groupby": [
+                  "origin"
+                ],
+                "summarize": [
+                  {
+                    "field": "count",
+                    "ops": [
+                      "sum"
+                    ],
+                    "as": [
+                      "flights"
+                    ]
+                  }
+                ]
               }
             ]
           },
           {
             "name": "airports",
-            "format": {"parse": "auto"},
+            "format": {
+              "parse": "auto"
+            },
             "transform": [
               {
-                "type": "lookup", "on": "traffic", "onKey": "origin",
-                "keys": ["iata"], "as": ["traffic"]
+                "type": "lookup",
+                "on": "traffic",
+                "onKey": "origin",
+                "keys": [
+                  "iata"
+                ],
+                "as": [
+                  "traffic"
+                ]
               },
               {
                 "type": "filter",
                 "test": "datum.traffic != null"
               },
               {
-                "type": "geo", "projection": "albersUsa",
-                "scale": 1200, "translate": [450, 280],
-                "lon": "longitude", "lat": "latitude"
+                "type": "geo",
+                "projection": "albersUsa",
+                "scale": 1200,
+                "translate": [
+                  450,
+                  280
+                ],
+                "lon": "longitude",
+                "lat": "latitude"
               },
               {
                 "type": "filter",
                 "test": "datum.layout_x != null && datum.layout_y != null"
               },
-              { "type": "sort", "by": "-traffic.flights" },
-              { "type": "voronoi", "x": "layout_x", "y": "layout_y" }
+              {
+                "type": "sort",
+                "by": "-traffic.flights"
+              },
+              {
+                "type": "voronoi",
+                "x": "layout_x",
+                "y": "layout_y"
+              }
             ]
           },
           {
             "name": "routes",
             "source": "flights-airport",
-            "format": {"parse": "auto"},
+            "format": {
+              "parse": "auto"
+            },
             "transform": [
-              { "type": "filter", "test": "hover && hover.iata == datum.origin" },
               {
-                "type": "lookup", "on": "airports", "onKey": "iata",
-                "keys": ["origin", "destination"], "as": ["_source", "_target"]
+                "type": "filter",
+                "test": "hover && hover.iata == datum.origin"
               },
-              { "type": "filter", "test": "datum._source && datum._target" },
-              { "type": "linkpath" }
+              {
+                "type": "lookup",
+                "on": "airports",
+                "onKey": "iata",
+                "keys": [
+                  "origin",
+                  "destination"
+                ],
+                "as": [
+                  "_source",
+                  "_target"
+                ]
+              },
+              {
+                "type": "filter",
+                "test": "datum._source && datum._target"
+              },
+              {
+                "type": "linkpath"
+              }
             ]
           }
         ],
-
         "scales": [
           {
             "name": "size",
             "type": "linear",
-            "domain": {"data": "traffic", "field": "flights"},
-            "range": [16, 1000]
+            "domain": {
+              "data": "traffic",
+              "field": "flights"
+            },
+            "range": [
+              16,
+              1000
+            ]
           }
         ],
-
         "signals": [
           {
-            "name": "hover", "init": null,
+            "name": "hover",
+            "init": null,
             "streams": [
-              {"type": "@cell:mouseover", "expr": "datum"},
-              {"type": "@cell:mouseout", "expr": "null"}
+              {
+                "type": "@cell:mouseover",
+                "expr": "datum"
+              },
+              {
+                "type": "@cell:mouseout",
+                "expr": "null"
+              }
             ]
           },
           {
-            "name": "title", "init": "U.S. Airports, 2008",
-            "streams": [{
-              "type": "hover",
-              "expr": "hover ? hover.name + ' (' + hover.iata + ')' : 'U.S. Airports, 2008'"
-            }]
+            "name": "title",
+            "init": "U.S. Airports, 2008",
+            "streams": [
+              {
+                "type": "hover",
+                "expr": "hover ? hover.name + ' (' + hover.iata + ')' : 'U.S. Airports, 2008'"
+              }
+            ]
           },
           {
-            "name": "cell_stroke", "init": null,
-            "streams": [{"type": "dblclick", "expr": "cell_stroke ? null : 'brown'"}]
+            "name": "cell_stroke",
+            "init": null,
+            "streams": [
+              {
+                "type": "dblclick",
+                "expr": "cell_stroke ? null : 'brown'"
+              }
+            ]
           }
         ],
-
         "marks": [
           {
             "type": "path",
-            "from": {"data": "states"},
+            "from": {
+              "data": "states"
+            },
             "properties": {
               "enter": {
-                "fill": {"value": "#dedede"},
-                "stroke": {"value": "white"}
+                "fill": {
+                  "value": "#dedede"
+                },
+                "stroke": {
+                  "value": "white"
+                }
               },
               "update": {
-                "path": {"field": "layout_path"}
+                "path": {
+                  "field": "layout_path"
+                }
               }
             }
           },
           {
             "type": "symbol",
-            "from": {"data": "airports"},
+            "from": {
+              "data": "airports"
+            },
             "properties": {
               "enter": {
-                "size": {"scale": "size", "field": "traffic.flights"},
-                "fill": {"value": "steelblue"},
-                "fillOpacity": {"value": 0.8},
-                "stroke": {"value": "white"},
-                "strokeWidth": {"value": 1.5}
+                "size": {
+                  "scale": "size",
+                  "field": "traffic.flights"
+                },
+                "fill": {
+                  "value": "steelblue"
+                },
+                "fillOpacity": {
+                  "value": 0.8
+                },
+                "stroke": {
+                  "value": "white"
+                },
+                "strokeWidth": {
+                  "value": 1.5
+                }
               },
               "update": {
-                "x": {"field": "layout_x"},
-                "y": {"field": "layout_y"}
+                "x": {
+                  "field": "layout_x"
+                },
+                "y": {
+                  "field": "layout_y"
+                }
               }
             }
           },
           {
             "type": "path",
             "name": "cell",
-            "from": {"data": "airports"},
+            "from": {
+              "data": "airports"
+            },
             "properties": {
               "enter": {
-                "fill": {"value": "transparent"},
-                "strokeWidth": {"value": 0.35}
+                "fill": {
+                  "value": "transparent"
+                },
+                "strokeWidth": {
+                  "value": 0.35
+                }
               },
               "update": {
-                "path": {"field": "layout_path"},
-                "stroke": {"signal": "cell_stroke"}
+                "path": {
+                  "field": "layout_path"
+                },
+                "stroke": {
+                  "signal": "cell_stroke"
+                }
               }
             }
           },
           {
             "type": "path",
             "interactive": false,
-            "from": {"data": "routes"},
+            "from": {
+              "data": "routes"
+            },
             "properties": {
               "enter": {
-                "path": {"field": "layout_path"},
-                "stroke": {"value": "black"},
-                "strokeOpacity": {"value": 0.35}
+                "path": {
+                  "field": "layout_path"
+                },
+                "stroke": {
+                  "value": "black"
+                },
+                "strokeOpacity": {
+                  "value": 0.35
+                }
               }
             }
           },
@@ -240,14 +378,26 @@
             "interactive": false,
             "properties": {
               "enter": {
-                "x": {"value": 895},
-                "y": {"value": 0},
-                "fill": {"value": "black"},
-                "fontSize": {"value": 20},
-                "align": {"value": "right"}
+                "x": {
+                  "value": 895
+                },
+                "y": {
+                  "value": 0
+                },
+                "fill": {
+                  "value": "black"
+                },
+                "fontSize": {
+                  "value": 20
+                },
+                "align": {
+                  "value": "right"
+                }
               },
               "update": {
-                "text": {"signal": "title"}
+                "text": {
+                  "signal": "title"
+                }
               }
             }
           }
