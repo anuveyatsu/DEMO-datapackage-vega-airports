@@ -85,6 +85,7 @@
       ],
       "specType": "vega",
       "spec": {
+        "$schema": "https://vega.github.io/schema/vega/v3.0.json",
         "width": 900,
         "height": 560,
         "padding": {
@@ -93,10 +94,82 @@
           "right": 0,
           "bottom": 0
         },
-        "data": [
+        "autosize": "none",
+        "signals": [
           {
-            "name": "flights-airport"
+            "name": "scale",
+            "value": 1200,
+            "bind": {
+              "input": "range",
+              "min": 500,
+              "max": 3000
+            }
           },
+          {
+            "name": "translateX",
+            "value": 450,
+            "bind": {
+              "input": "range",
+              "min": -500,
+              "max": 1200
+            }
+          },
+          {
+            "name": "translateY",
+            "value": 260,
+            "bind": {
+              "input": "range",
+              "min": -300,
+              "max": 700
+            }
+          },
+          {
+            "name": "shape",
+            "value": "line",
+            "bind": {
+              "input": "radio",
+              "options": [
+                "line",
+                "curve"
+              ]
+            }
+          },
+          {
+            "name": "hover",
+            "value": null,
+            "on": [
+              {
+                "events": "@cell:mouseover",
+                "update": "datum"
+              },
+              {
+                "events": "@cell:mouseout",
+                "update": "null"
+              }
+            ]
+          },
+          {
+            "name": "title",
+            "value": "U.S. Airports, 2008",
+            "update": "hover ? hover.name + ' (' + hover.iata + ')' : 'U.S. Airports, 2008'"
+          },
+          {
+            "name": "cell_stroke",
+            "value": null,
+            "on": [
+              {
+                "events": "dblclick",
+                "update": "cell_stroke ? null : 'brown'"
+              },
+              {
+                "events": "mousedown!",
+                "update": "cell_stroke"
+              }
+            ]
+          }
+        ],
+        "data": [
+          {"name": "flights-airport"},
           {
             "name": "states",
             "format": {
@@ -106,12 +179,7 @@
             "transform": [
               {
                 "type": "geopath",
-                "projection": "albersUsa",
-                "scale": 1200,
-                "translate": [
-                  450,
-                  280
-                ]
+                "projection": "projection"
               }
             ]
           },
@@ -119,6 +187,7 @@
             "name": "traffic",
             "source": "flights-airport",
             "format": {
+              "type": "csv",
               "parse": "auto"
             },
             "transform": [
@@ -127,16 +196,14 @@
                 "groupby": [
                   "origin"
                 ],
-                "summarize": [
-                  {
-                    "field": "count",
-                    "ops": [
-                      "sum"
-                    ],
-                    "as": [
-                      "flights"
-                    ]
-                  }
+                "fields": [
+                  "count"
+                ],
+                "ops": [
+                  "sum"
+                ],
+                "as": [
+                  "flights"
                 ]
               }
             ]
@@ -144,14 +211,15 @@
           {
             "name": "airports",
             "format": {
+              "type": "csv",
               "parse": "auto"
             },
             "transform": [
               {
                 "type": "lookup",
-                "on": "traffic",
-                "onKey": "origin",
-                "keys": [
+                "from": "traffic",
+                "key": "origin",
+                "fields": [
                   "iata"
                 ],
                 "as": [
@@ -160,31 +228,31 @@
               },
               {
                 "type": "filter",
-                "test": "datum.traffic != null"
+                "expr": "datum.traffic != null"
               },
               {
-                "type": "geo",
-                "projection": "albersUsa",
-                "scale": 1200,
-                "translate": [
-                  450,
-                  280
-                ],
-                "lon": "longitude",
-                "lat": "latitude"
+                "type": "geopoint",
+                "projection": "projection",
+                "fields": [
+                  "longitude",
+                  "latitude"
+                ]
               },
               {
                 "type": "filter",
-                "test": "datum.layout_x != null && datum.layout_y != null"
-              },
-              {
-                "type": "sort",
-                "by": "-traffic.flights"
+                "expr": "datum.x != null && datum.y != null"
               },
               {
                 "type": "voronoi",
-                "x": "layout_x",
-                "y": "layout_y"
+                "x": "x",
+                "y": "y"
+              },
+              {
+                "type": "collect",
+                "sort": {
+                  "field": "traffic.flights",
+                  "order": "descending"
+                }
               }
             ]
           },
@@ -192,32 +260,53 @@
             "name": "routes",
             "source": "flights-airport",
             "format": {
+              "type": "csv",
               "parse": "auto"
             },
             "transform": [
               {
                 "type": "filter",
-                "test": "hover && hover.iata == datum.origin"
+                "expr": "hover && hover.iata == datum.origin"
               },
               {
                 "type": "lookup",
-                "on": "airports",
-                "onKey": "iata",
-                "keys": [
+                "from": "airports",
+                "key": "iata",
+                "fields": [
                   "origin",
                   "destination"
                 ],
                 "as": [
-                  "_source",
-                  "_target"
+                  "source",
+                  "target"
                 ]
               },
               {
                 "type": "filter",
-                "test": "datum._source && datum._target"
+                "expr": "datum.source && datum.target"
               },
               {
-                "type": "linkpath"
+                "type": "linkpath",
+                "shape": {
+                  "signal": "shape"
+                }
+              }
+            ]
+          }
+        ],
+        "projections": [
+          {
+            "name": "projection",
+            "type": "albersUsa",
+            "scale": {
+              "signal": "scale"
+            },
+            "translate": [
+              {
+                "signal": "translateX"
+              },
+              {
+                "signal": "translateY"
               }
             ]
           }
@@ -236,49 +325,13 @@
             ]
           }
         ],
-        "signals": [
-          {
-            "name": "hover",
-            "init": null,
-            "streams": [
-              {
-                "type": "@cell:mouseover",
-                "expr": "datum"
-              },
-              {
-                "type": "@cell:mouseout",
-                "expr": "null"
-              }
-            ]
-          },
-          {
-            "name": "title",
-            "init": "U.S. Airports, 2008",
-            "streams": [
-              {
-                "type": "hover",
-                "expr": "hover ? hover.name + ' (' + hover.iata + ')' : 'U.S. Airports, 2008'"
-              }
-            ]
-          },
-          {
-            "name": "cell_stroke",
-            "init": null,
-            "streams": [
-              {
-                "type": "dblclick",
-                "expr": "cell_stroke ? null : 'brown'"
-              }
-            ]
-          }
-        ],
         "marks": [
           {
             "type": "path",
             "from": {
               "data": "states"
             },
-            "properties": {
+            "encode": {
               "enter": {
                 "fill": {
                   "value": "#dedede"
@@ -289,7 +342,7 @@
               },
               "update": {
                 "path": {
-                  "field": "layout_path"
+                  "field": "path"
                 }
               }
             }
@@ -299,7 +352,7 @@
             "from": {
               "data": "airports"
             },
-            "properties": {
+            "encode": {
               "enter": {
                 "size": {
                   "scale": "size",
@@ -320,10 +373,10 @@
               },
               "update": {
                 "x": {
-                  "field": "layout_x"
+                  "field": "x"
                 },
                 "y": {
-                  "field": "layout_y"
+                  "field": "y"
                 }
               }
             }
@@ -334,7 +387,7 @@
             "from": {
               "data": "airports"
             },
-            "properties": {
+            "encode": {
               "enter": {
                 "fill": {
                   "value": "transparent"
@@ -345,7 +398,7 @@
               },
               "update": {
                 "path": {
-                  "field": "layout_path"
+                  "field": "path"
                 },
                 "stroke": {
                   "signal": "cell_stroke"
@@ -359,10 +412,10 @@
             "from": {
               "data": "routes"
             },
-            "properties": {
+            "encode": {
               "enter": {
                 "path": {
-                  "field": "layout_path"
+                  "field": "path"
                 },
                 "stroke": {
                   "value": "black"
@@ -376,7 +429,7 @@
           {
             "type": "text",
             "interactive": false,
-            "properties": {
+            "encode": {
               "enter": {
                 "x": {
                   "value": 895
