@@ -79,9 +79,9 @@
       "name": "airports-map-interactive",
       "title": "Airports connections in the US",
       "resources": [
-        0,
-        1,
-        2
+        "states",
+        "flights-airport",
+        "airports"
       ],
       "specType": "vega",
       "spec": {
