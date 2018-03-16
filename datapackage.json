@@ -4,7 +4,7 @@
   "sources": [
     {
       "name": "vega-datasets",
-      "web": "https://github.com/vega/vega-datasets",
+      "path": "https://github.com/vega/vega-datasets",
       "title": "vega-datasets"
     }
   ],
